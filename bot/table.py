@@ -68,17 +68,21 @@ SCHEDULE = [
     StudyDay(
         name='Четверг',
         upper=[
-            Para(1, ParaType.LAB, 'СИИТ', '2/215 (ДО)', Subgroup.FIRST, '17.09.2020', '29.10.2020'),
-            Para(2, ParaType.LAB, 'СИИТ', '2/215 (ДО)', Subgroup.FIRST, '17.09.2020', '29.10.2020'),
-            Para(3, ParaType.LECTURE, 'СИИТ', '2/215 (ДО)', to='19.11.2020'),
-            Para(4, ParaType.LECTURE, 'СМЗКС', '2/109'),
+            Para(0, ParaType.LAB, 'СИИТ', '2/215 (ДО)',
+                 Subgroup.FIRST, '17.09.2020', '29.10.2020'),
+            Para(1, ParaType.LAB, 'СИИТ', '2/215 (ДО)',
+                 Subgroup.FIRST, '17.09.2020', '29.10.2020'),
+            Para(2, ParaType.LECTURE, 'СИИТ', '2/215 (ДО)', to='19.11.2020'),
+            Para(3, ParaType.LECTURE, 'СМЗКС', '2/109 (ДО)'),
 
         ],
         lower=[
-            Para(1, ParaType.LAB, 'СИИТ', '2/215 (ДО)', Subgroup.SECOND, to='17.10.2020'),
-            Para(2, ParaType.LAB, 'СИИТ', '2/215 (ДО)', Subgroup.SECOND, to='17.10.2020'),
-            Para(3, ParaType.LECTURE, 'СИИТ', '2/215 (ДО)', to='19.11.2020'),
-            Para(4, ParaType.LECTURE, 'СМЗКС', '2/109'),
+            Para(0, ParaType.LAB, 'СИИТ', '2/215 (ДО)',
+                 Subgroup.SECOND, to='17.10.2020'),
+            Para(1, ParaType.LAB, 'СИИТ', '2/215 (ДО)',
+                 Subgroup.SECOND, to='17.10.2020'),
+            Para(2, ParaType.LECTURE, 'СИИТ', '2/215 (ДО)', to='19.11.2020'),
+            Para(3, ParaType.LECTURE, 'СМЗКС', '2/109 (ДО)'),
         ],
     ),
     StudyDay(
@@ -90,11 +94,11 @@ SCHEDULE = [
         name='Суббота',
         upper=[
             Para(4, ParaType.LECTURE, 'ЕЯИИС', '1/402'),
-            Para(5, ParaType.LAB, 'СМЗКТ', '2/215'),
+            Para(5, ParaType.LAB, 'СМЗКТ', '2/215 (ДО)'),
         ],
         lower=[
             Para(4, ParaType.LECTURE, 'ЕЯИИС', '1/402'),
-            Para(5, ParaType.LAB, 'СМЗКТ', '2/215'),
+            Para(5, ParaType.LAB, 'СМЗКТ', '2/215 (ДО)'),
         ],
     ),
     StudyDay(
@@ -108,12 +112,24 @@ SCHEDULE = [
 def get_schedule_by_date(date: Union[datetime.date, str]):
     if date == 'today':
         date = datetime.datetime.now().date()
-    elif type(date) is str:
-        date = str2date(date)
-    elif type(date) is not datetime.date:
+        if type(date) is str:
+            date = str2date(date)
+        weekday = date.weekday()
+        study_day = SCHEDULE[weekday]
+        schedule = study_day.build_schedule(date)
+
+    if date == 'tomorrow':
+        date = datetime.datetime.now().date()
+        if type(date) is str:
+            date = str2date(date)
+        weekday = date.weekday()
+        weekday += 1
+        if weekday == 7:
+            weekday = 0
+        study_day = SCHEDULE[weekday]
+        schedule = study_day.build_schedule(date)
+
+    if type(date) is not datetime.date:
         raise TypeError
 
-    weekday = date.weekday()
-    study_day = SCHEDULE[weekday]
-    schedule = study_day.build_schedule(date)
     return schedule

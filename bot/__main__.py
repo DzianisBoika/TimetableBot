@@ -13,7 +13,7 @@ with open(credentials_path) as file:
 
 bot = telebot.TeleBot(token)
 keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-keyboard.row('Расписание')
+keyboard.row('Расписание', 'Завтра')
 
 
 @bot.message_handler(commands=['start'])
@@ -28,17 +28,21 @@ def send_text(message: telebot.types.Message):
     if message.text.lower() == 'расписание':
         schedule = get_schedule_by_date('today')
         bot.send_message(chat_id, schedule, reply_markup=keyboard)
+    elif message.text.lower() == 'завтра':
+        schedule = get_schedule_by_date('tomorrow')
+        bot.send_message(chat_id, schedule, reply_markup=keyboard)
     else:
         bot.send_message(chat_id, 'Unknown command', reply_markup=keyboard)
 
 
 def main():
-    try:
-        bot.polling(none_stop=True)
-    except Exception as err:
-        logging.error(err)
-        time.sleep(5)
-        print('Internet ERROR!')
+    while True:
+        try:
+            bot.polling(none_stop=True)
+        except Exception as err:
+            logging.error(err)
+            time.sleep(5)
+            print('Internet ERROR!')
 
 
 if __name__ == '__main__':
