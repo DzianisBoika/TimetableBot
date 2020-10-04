@@ -119,13 +119,11 @@ def get_schedule_by_date(date: Union[datetime.date, str]):
         schedule = study_day.build_schedule(date)
 
     if date == 'tomorrow':
-        date = datetime.datetime.now().date()
+        today = datetime.date.today()
+        date = today + datetime.timedelta(days=1)
         if type(date) is str:
             date = str2date(date)
         weekday = date.weekday()
-        weekday += 1
-        if weekday == 7:
-            weekday = 0
         study_day = SCHEDULE[weekday]
         schedule = study_day.build_schedule(date)
 
